@@ -1,6 +1,5 @@
 package org.learning.kafka;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.errors.AuthorizationException;
@@ -8,13 +7,20 @@ import org.apache.kafka.common.errors.OutOfOrderSequenceException;
 import org.apache.kafka.common.errors.ProducerFencedException;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-@Slf4j
+
 public class JavaKafkaProducer {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
+
+        Logger log = LoggerFactory.getLogger(JavaKafkaProducer.class);
+
+        log.info("start");
+
         String server = "localhost:9092";
         String topicName = "theFirstTopic";
 
@@ -34,10 +40,12 @@ public class JavaKafkaProducer {
             try {
                 producer.send(new ProducerRecord(topicName, "example message " + i)).get();
             } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
-                log.error(message + ", is mot send, producer is closed", e.getCause().toString());
+                log.error("__________________________________________");
+                log.error(message + ", is mot send, producer is closed");
                 producer.close();
             } catch (KafkaException e) {
-                log.error(message + ", transaction is aborted and try again", e.getCause().toString());
+                log.error("__________________________________________");
+                log.error(message + ", transaction is aborted and try again");
                 producer.abortTransaction();
             }
         }
@@ -46,6 +54,5 @@ public class JavaKafkaProducer {
 //        if (recordMetadata.hasOffset())
 //            System.out.println("Message sent successfully");
 
-//        producer.close();
     }
 }
